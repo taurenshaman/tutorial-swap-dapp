@@ -12,8 +12,10 @@ async function init() {
 
 async function listAvailableTokens(){
     console.log("initializing");
-    let response = await fetch('https://tokens.coingecko.com/uniswap/all.json');
-    let tokenListJSON = await response.json();
+    // let response = await fetch('https://tokens.coingecko.com/uniswap/all.json');
+    // let tokenListJSON = await response.json();
+    let response='{"name":"CoinGecko","logoURI":"https://www.coingecko.com/assets/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png","keywords":["defi"],"timestamp":"2022-08-17T04:08:12.925+00:00","tokens":[{"chainId":56,"address":"0x55d398326f99059fF775485246999027B3197955","name":"busd","symbol":"busd","decimals":18,"logoURI":"https://assets.coingecko.com/coins/images/9956/thumb/4943.png?1636636734"},{"chainId":56,"address":"0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c","name":"bnb","symbol":"bnb","decimals":18,"logoURI":"https://assets.coingecko.com/coins/images/9956/thumb/4943.png?1636636734"}],"version":{"major":975,"minor":1,"patch":0}}';
+    let tokenListJSON = JSON.parse(response);
     console.log("listing available tokens: ", tokenListJSON);
     tokens = tokenListJSON.tokens;
     console.log("tokens: ", tokens);
@@ -84,7 +86,8 @@ function closeModal(){
 async function getPrice(){
     console.log("Getting Price");
   
-    if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value) return;
+    if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value)
+        return;
     let amount = Number(document.getElementById("from_amount").value * 10 ** currentTrade.from.decimals);
   
     const params = {
@@ -94,7 +97,8 @@ async function getPrice(){
     }
   
     // Fetch the swap price.
-    const response = await fetch(`https://api.0x.org/swap/v1/price?${qs.stringify(params)}`);
+    //const response = await fetch(`https://api.0x.org/swap/v1/price?${qs.stringify(params)}`);
+    const response = await fetch(`https://bsc.api.0x.org/swap/v1/price?${qs.stringify(params)}`);
     
     swapPriceJSON = await response.json();
     console.log("Price: ", swapPriceJSON);
@@ -106,7 +110,8 @@ async function getPrice(){
 async function getQuote(account){
     console.log("Getting Quote");
   
-    if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value) return;
+    if (!currentTrade.from || !currentTrade.to || !document.getElementById("from_amount").value)
+        return;
     let amount = Number(document.getElementById("from_amount").value * 10 ** currentTrade.from.decimals);
   
     const params = {
@@ -114,10 +119,12 @@ async function getQuote(account){
         buyToken: currentTrade.to.address,
         sellAmount: amount,
         takerAddress: account,
+        slippagePercentage: 0.05
     }
   
     // Fetch the swap quote.
-    const response = await fetch(`https://api.0x.org/swap/v1/quote?${qs.stringify(params)}`);
+    //const response = await fetch(`https://api.0x.org/swap/v1/quote?${qs.stringify(params)}`);
+    const response = await fetch(`https://bsc.api.0x.org/swap/v1/quote?${qs.stringify(params)}`);
     
     swapQuoteJSON = await response.json();
     console.log("Quote: ", swapQuoteJSON);
